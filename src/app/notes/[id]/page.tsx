@@ -25,20 +25,55 @@ export default async function NoteDetailPage({ params }: PageProps) {
   if (note.user_id !== user.id) redirect('/dashboard');
 
   return (
-    <main className="relative min-h-screen bg-[radial-gradient(60%_80%_at_50%_0%,#0b1220_0%,#0a0a0b_60%,#060607_100%)] text-zinc-100">
-      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_bottom,rgba(255,255,255,0.04),transparent_20%),linear-gradient(to_right,rgba(255,255,255,0.03),transparent_20%)] [mask-image:radial-gradient(ellipse_at_center,black_60%,transparent_100%)]" />
-      <section className="relative mx-auto max-w-3xl p-6">
-        <nav className="mb-4 text-sm text-zinc-400">
-          <Link className="hover:text-zinc-200" href="/dashboard">← Back to Dashboard</Link>
+    <main className="min-h-screen" style={{ background: 'var(--pl-void)', color: 'var(--pl-ink)' }}>
+      {/* ── Top bar ── */}
+      <header
+        className="sticky top-0 z-50 flex items-center justify-between px-6 py-4 backdrop-blur-md"
+        style={{
+          background: 'rgba(26, 24, 22, 0.85)',
+          borderBottom: '1px solid var(--pl-border)',
+        }}
+      >
+        <Link
+          href="/dashboard"
+          className="text-xl font-bold tracking-tight transition-opacity hover:opacity-80"
+          style={{ fontFamily: 'var(--font-display)' }}
+        >
+          Planly
+        </Link>
+      </header>
+
+      <div className="mx-auto max-w-[720px] px-6 pb-20 pt-8">
+        {/* Back link */}
+        <nav className="mb-6">
+          <Link
+            href="/dashboard"
+            className="inline-flex items-center gap-1 text-xs font-medium transition-colors"
+            style={{ color: 'var(--pl-muted)' }}
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M19 12H5" />
+              <path d="M12 19l-7-7 7-7" />
+            </svg>
+            Back to notes
+          </Link>
         </nav>
 
-        <div className="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-xl shadow-[0_10px_50px_rgba(0,0,0,0.35)]">
-          {/* Header actions */}
-          <header className="mb-4 flex flex-wrap items-start justify-between gap-3">
+        {/* ── Edit card ── */}
+        <div className="pl-card p-6 pl-animate-stagger">
+          <header className="mb-5 flex flex-wrap items-start justify-between gap-3">
             <div>
-              <h1 className="text-xl font-semibold">Edit note</h1>
-              <p className="mt-1 text-xs text-zinc-500">
-                Last updated {new Date(note.updated_at || note.created_at).toLocaleString()}
+              <h1 className="text-lg font-medium" style={{ color: 'var(--pl-ink)' }}>
+                Edit note
+              </h1>
+              <p
+                className="mt-1 text-[0.6875rem]"
+                style={{ fontFamily: 'var(--font-mono)', color: 'var(--pl-muted)' }}
+              >
+                Last updated {new Date(note.updated_at || note.created_at).toLocaleString('en-US', {
+                  month: 'short', day: 'numeric', year: 'numeric',
+                  hour: 'numeric', minute: '2-digit',
+                })}
               </p>
             </div>
 
@@ -46,16 +81,15 @@ export default async function NoteDetailPage({ params }: PageProps) {
               {/* Summarize */}
               <form action={summarizeNote}>
                 <input type="hidden" name="id" value={note.id} />
-                <SubmitButton pendingText="Summarizing…">Summarize</SubmitButton>
+                <SubmitButton pendingText="Distilling…" className="gap-1.5">
+                  <span className="pl-glyph">✦</span> Distill
+                </SubmitButton>
               </form>
 
               {/* Delete */}
               <form action={deleteNote}>
                 <input type="hidden" name="id" value={note.id} />
-                <ConfirmButton
-                  confirmText="Delete note?"
-                  className="rounded-xl border border-red-500/30 bg-red-500/10 px-3 py-2 text-sm text-red-200 hover:bg-red-500/20 focus:outline-none focus:ring-2 focus:ring-red-500/40"
-                >
+                <ConfirmButton confirmText="Delete this note permanently?">
                   Delete
                 </ConfirmButton>
               </form>
@@ -63,56 +97,82 @@ export default async function NoteDetailPage({ params }: PageProps) {
           </header>
 
           {/* Edit form */}
-          <form action={updateNote} className="grid gap-4">
+          <form action={updateNote} className="space-y-4">
             <input type="hidden" name="id" value={note.id} />
 
             <div>
-              <label htmlFor="title" className="mb-1 block text-sm text-zinc-300">Title</label>
+              <label htmlFor="note-title" className="mb-1.5 block text-xs font-medium" style={{ color: 'var(--pl-muted)' }}>
+                Title
+              </label>
               <input
-                id="title"
+                id="note-title"
                 name="title"
                 defaultValue={note.title}
                 required
-                className="w-full rounded-xl bg-zinc-900/70 px-3 py-2.5 text-zinc-100 outline-none ring-1 ring-white/10 transition focus:ring-2 focus:ring-blue-500/60"
+                className="pl-input"
               />
             </div>
 
             <div>
-              <label htmlFor="content" className="mb-1 block text-sm text-zinc-300">Content</label>
+              <label htmlFor="note-content" className="mb-1.5 block text-xs font-medium" style={{ color: 'var(--pl-muted)' }}>
+                Content
+              </label>
               <textarea
-                id="content"
+                id="note-content"
                 name="content"
-                rows={8}
+                rows={10}
                 defaultValue={note.content || ''}
-                className="w-full resize-y rounded-xl bg-zinc-900/70 px-3 py-2.5 text-zinc-100 outline-none ring-1 ring-white/10 transition focus:ring-2 focus:ring-blue-500/60"
+                className="pl-input resize-y"
               />
             </div>
 
             <div className="flex justify-end pt-2">
-              <SubmitButton pendingText="Saving…">Save changes</SubmitButton>
+              <SubmitButton pendingText="Saving…" className="w-auto px-6">
+                Save changes
+              </SubmitButton>
             </div>
           </form>
         </div>
 
-        {/* Summary card */}
-        <div className="mt-6 rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-xl">
-          <h2 className="text-base font-medium">Summary</h2>
+        {/* ── Summary card ── */}
+        <div
+          className="pl-card mt-6 p-6 pl-animate-stagger"
+          style={{ animationDelay: '0.1s' }}
+        >
+          <div className="flex items-center gap-2">
+            <span className="pl-glyph text-base">✦</span>
+            <h2 className="text-sm font-medium" style={{ color: 'var(--pl-ink)' }}>
+              AI Summary
+            </h2>
+          </div>
+
           {!note.summary ? (
-            <p className="mt-2 text-sm text-zinc-400">
-              No summary yet — click <span className="text-zinc-200">Summarize</span> above.
+            <p className="mt-3 text-sm" style={{ color: 'var(--pl-muted)' }}>
+              No summary yet — click{' '}
+              <span style={{ color: 'var(--pl-summary)' }}>✦ Distill</span>{' '}
+              above to generate one.
             </p>
           ) : (
             <>
-              <p className="mt-2 text-sm text-zinc-200 whitespace-pre-wrap">{note.summary}</p>
+              <div className="pl-summary-bar mt-3 py-2 px-3">
+                <p className="text-sm leading-relaxed" style={{ color: 'var(--pl-ink)' }}>
+                  {note.summary}
+                </p>
+              </div>
               {note.summarized_at && (
-                <p className="mt-3 text-xs text-zinc-500">
-                  Generated {new Date(note.summarized_at).toLocaleString()}
+                <p
+                  className="mt-3 text-[0.6875rem]"
+                  style={{ fontFamily: 'var(--font-mono)', color: 'var(--pl-muted)' }}
+                >
+                  Generated {new Date(note.summarized_at).toLocaleString('en-US', {
+                    month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit',
+                  })}
                 </p>
               )}
             </>
           )}
         </div>
-      </section>
+      </div>
     </main>
   );
 }

@@ -30,7 +30,14 @@ export default function ConfirmButton({
       type="submit"
       onClick={onClick}
       disabled={pending}
-      className={`${className} ${pending ? 'opacity-70 cursor-not-allowed' : ''}`}
+      className={className}
+      style={{
+        color: pending ? 'var(--pl-muted)' : 'var(--pl-danger)',
+        opacity: pending ? 0.6 : 1,
+        cursor: pending ? 'not-allowed' : 'pointer',
+        fontSize: '0.8125rem',
+        transition: 'opacity 0.15s ease',
+      }}
     >
       {pending ? 'Deleting…' : children}
     </button>

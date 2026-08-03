@@ -1,53 +1,156 @@
 import { redirectIfAuthenticated } from '@/utils/redirectIfAuthenticated';
 import Link from 'next/link';
+import HeroDemo from './_components/HeroDemo';
 
 export default async function LandingPage() {
   await redirectIfAuthenticated();
 
   return (
-    <main className="relative min-h-screen bg-[radial-gradient(60%_80%_at_50%_0%,#0b1220_0%,#0a0a0b_60%,#060607_100%)] text-zinc-100">
-      {/* subtle grid / vignette */}
-      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_bottom,rgba(255,255,255,0.04),transparent_20%),linear-gradient(to_right,rgba(255,255,255,0.03),transparent_20%)] [mask-image:radial-gradient(ellipse_at_center,black_60%,transparent_100%)]" />
+    <main
+      className="relative min-h-screen"
+      style={{ background: 'var(--pl-void)', color: 'var(--pl-ink)' }}
+    >
+      {/* ── Top nav ── */}
+      <nav
+        className="sticky top-0 z-50 flex items-center justify-between px-6 py-4 backdrop-blur-md"
+        style={{
+          background: 'rgba(26, 24, 22, 0.85)',
+          borderBottom: '1px solid var(--pl-border)',
+        }}
+      >
+        <span
+          className="text-xl font-bold tracking-tight"
+          style={{ fontFamily: 'var(--font-display)' }}
+        >
+          Planly
+        </span>
+        <Link
+          href="/login"
+          className="text-sm font-medium text-[var(--pl-muted)] hover:text-[var(--pl-ink)] transition-colors"
+        >
+          Sign in
+        </Link>
+      </nav>
 
-      <section className="relative mx-auto flex min-h-screen max-w-7xl items-center justify-center p-6">
-        <div className="w-full max-w-3xl text-center">
-          <h1 className="mt-6 text-5xl font-semibold tracking-tight sm:text-6xl">
-            Planly
+      {/* ── Hero section ── */}
+      <section className="relative mx-auto flex flex-col items-center px-6 pb-24 pt-20 sm:pt-28">
+        {/* Headline */}
+        <div className="pl-animate-stagger max-w-2xl text-center">
+          <h1
+            className="text-[3rem] leading-[1.1] font-bold tracking-tight sm:text-[3.5rem]"
+            style={{ fontFamily: 'var(--font-display)' }}
+          >
+            Write everything.
+            <br />
+            <span style={{ color: 'var(--pl-ember)' }}>Keep what matters.</span>
           </h1>
-          <p className="mx-auto mt-4 max-w-2xl text-zinc-400">
-            A thoughtfully minimal, AI-assisted notes & planning app built with TypeScript and Supabase. Sign in to start capturing ideas and generating concise summaries.
-          </p>
 
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-            <Link
-              href="/login"
-              className="rounded-xl bg-blue-600 px-6 py-3 text-sm font-medium text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.08),0_12px_20px_rgba(0,0,0,0.4)] transition hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-400/70"
+          <p
+            className="mx-auto mt-5 max-w-lg text-base leading-relaxed sm:text-[1.0625rem]"
+            style={{ color: 'var(--pl-muted)' }}
+          >
+            Capture your thoughts in full. Planly's AI reads through the noise
+            and distills each note into the key points you actually need.
+          </p>
+        </div>
+
+        {/* CTAs */}
+        <div
+          className="pl-animate-stagger mt-8 flex flex-wrap items-center justify-center gap-3"
+          style={{ animationDelay: '0.15s' }}
+        >
+          <Link href="/signup" className="pl-btn-primary px-7 py-3">
+            Open your notebook →
+          </Link>
+          <Link href="/login" className="pl-btn-ghost px-7 py-3">
+            Sign in
+          </Link>
+        </div>
+
+        {/* ── The Distill Demo ── */}
+        <div
+          className="pl-animate-stagger mt-16 w-full max-w-lg"
+          style={{ animationDelay: '0.3s' }}
+        >
+          <HeroDemo />
+        </div>
+
+        {/* ── Feature cards ── */}
+        <div
+          className="pl-animate-stagger mt-20 grid w-full max-w-3xl grid-cols-1 gap-4 sm:grid-cols-3"
+          style={{ animationDelay: '0.45s' }}
+        >
+          {/* Private by design */}
+          <div className="pl-card p-5">
+            <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-lg" style={{ background: 'var(--pl-surface-raised)' }}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--pl-ember)' }}>
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+              </svg>
+            </div>
+            <h3 className="text-sm font-medium" style={{ color: 'var(--pl-ink)' }}>
+              Private by design
+            </h3>
+            <p className="mt-1 text-xs leading-relaxed" style={{ color: 'var(--pl-muted)' }}>
+              Only you can ever see your notes. Every row is locked to your account.
+            </p>
+            <p
+              className="mt-2 text-[0.625rem]"
+              style={{ fontFamily: 'var(--font-mono)', color: 'var(--pl-muted)', opacity: 0.6 }}
             >
-              Get started
-            </Link>
-            <Link
-              href="/signup"
-              className="rounded-xl border border-white/10 bg-white/5 px-6 py-3 text-sm font-medium text-zinc-100 backdrop-blur-xl transition hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/20"
-            >
-              Create account
-            </Link>
+              Supabase RLS
+            </p>
           </div>
 
-          {/* feature grid */}
-          <div className="mt-12 grid grid-cols-1 gap-4 sm:grid-cols-3">
-            {[
-              ['Secure by default', 'Row Level Security via Supabase Auth'],
-              ['Fast & typed', 'Next.js App Router + TypeScript + Server Actions'],
-              ['AI summaries', 'Turn long notes into quick insights'],
-            ].map(([title, desc]) => (
-              <div key={title} className="rounded-2xl border border-white/10 bg-white/5 p-4 text-left backdrop-blur-xl">
-                <h3 className="text-sm font-medium">{title}</h3>
-                <p className="mt-1 text-xs text-zinc-400">{desc}</p>
-              </div>
-            ))}
+          {/* Instant capture */}
+          <div className="pl-card p-5">
+            <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-lg" style={{ background: 'var(--pl-surface-raised)' }}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--pl-ember)' }}>
+                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+              </svg>
+            </div>
+            <h3 className="text-sm font-medium" style={{ color: 'var(--pl-ink)' }}>
+              Instant capture
+            </h3>
+            <p className="mt-1 text-xs leading-relaxed" style={{ color: 'var(--pl-muted)' }}>
+              No loading screens. Start typing and your note saves instantly.
+            </p>
+            <p
+              className="mt-2 text-[0.625rem]"
+              style={{ fontFamily: 'var(--font-mono)', color: 'var(--pl-muted)', opacity: 0.6 }}
+            >
+              Next.js Server Actions
+            </p>
+          </div>
+
+          {/* AI distills */}
+          <div className="pl-card p-5">
+            <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-lg" style={{ background: 'var(--pl-summary-bg)' }}>
+              <span className="text-base" style={{ color: 'var(--pl-summary)' }}>✦</span>
+            </div>
+            <h3 className="text-sm font-medium" style={{ color: 'var(--pl-ink)' }}>
+              AI distills for you
+            </h3>
+            <p className="mt-1 text-xs leading-relaxed" style={{ color: 'var(--pl-muted)' }}>
+              One click turns a long note into the 2–3 sentences that matter.
+            </p>
+            <p
+              className="mt-2 text-[0.625rem]"
+              style={{ fontFamily: 'var(--font-mono)', color: 'var(--pl-muted)', opacity: 0.6 }}
+            >
+              GPT-4o mini
+            </p>
           </div>
         </div>
       </section>
+
+      {/* ── Footer ── */}
+      <footer
+        className="border-t px-6 py-6 text-center text-xs"
+        style={{ borderColor: 'var(--pl-border)', color: 'var(--pl-muted)' }}
+      >
+        Built with Next.js, TypeScript & Supabase
+      </footer>
     </main>
   );
 }

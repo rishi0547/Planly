@@ -3,8 +3,7 @@ import { createClient } from '@/utils/supabase/server';
 import SubmitButton from '../_components/SubmitButton';
 import { createNote, deleteNote } from '../(notes)/actions';
 import LogoutButton from '../_components/LogoutButton';
-import Link from 'next/link';
-import ConfirmButton from '../_components/ConfirmButton';
+import NoteCard from '../_components/NoteCard';
 
 export default async function DashboardPage() {
   const user = await redirectIfNotAuthenticated();
@@ -12,99 +11,151 @@ export default async function DashboardPage() {
 
   const { data: notes } = await supabase
     .from('notes')
-    .select('id, title, content, created_at, updated_at')
+    .select('id, title, content, summary, summarized_at, created_at, updated_at')
     .order('created_at', { ascending: false });
 
   return (
-    <main className="relative min-h-screen bg-[radial-gradient(60%_80%_at_50%_0%,#0b1220_0%,#0a0a0b_60%,#060607_100%)] text-zinc-100">
-      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_bottom,rgba(255,255,255,0.04),transparent_20%),linear-gradient(to_right,rgba(255,255,255,0.03),transparent_20%)] [mask-image:radial-gradient(ellipse_at_center,black_60%,transparent_100%)]" />
+    <main className="min-h-screen" style={{ background: 'var(--pl-void)', color: 'var(--pl-ink)' }}>
+      {/* ── Top bar ── */}
+      <header
+        className="sticky top-0 z-50 flex items-center justify-between px-6 py-4 backdrop-blur-md"
+        style={{
+          background: 'rgba(26, 24, 22, 0.85)',
+          borderBottom: '1px solid var(--pl-border)',
+        }}
+      >
+        <span
+          className="text-xl font-bold tracking-tight"
+          style={{ fontFamily: 'var(--font-display)' }}
+        >
+          Planly
+        </span>
+        <div className="flex items-center gap-4">
+          <span className="text-xs" style={{ color: 'var(--pl-muted)', fontFamily: 'var(--font-mono)' }}>
+            {user.email}
+          </span>
+          <LogoutButton />
+        </div>
+      </header>
 
-      <section className="relative mx-auto max-w-5xl p-6">
-        <header className="flex flex-col gap-2 pb-6 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <h1 className="text-2xl font-semibold tracking-tight">Your Notes</h1>
-            <p className="text-sm text-zinc-400">
-              Signed in as <span className="text-zinc-200">{user.email}</span>
-            </p>
-            <LogoutButton />
+      <div className="mx-auto max-w-[720px] px-6 pb-20 pt-8">
+        {/* ── Composer ── */}
+        <div
+          className="pl-card-raised p-5 pl-animate-stagger"
+          style={{ animationDelay: '0.05s' }}
+        >
+          <div className="mb-4 flex items-center gap-2">
+            <span style={{ color: 'var(--pl-ember)', fontSize: '1rem' }}>✎</span>
+            <h2 className="text-sm font-medium" style={{ color: 'var(--pl-ink)' }}>
+              Capture a thought
+            </h2>
           </div>
-        </header>
 
-        {/* Create Note Card */}
-        <div className="mb-6 rounded-2xl border border-white/10 bg-white/5 p-5 backdrop-blur-xl shadow-[0_10px_50px_rgba(0,0,0,0.35)]">
-          <h2 className="text-base font-medium">Create a note</h2>
-          <form action={createNote} className="mt-4 grid gap-3 sm:grid-cols-2">
-            <div className="sm:col-span-2">
-              <label htmlFor="title" className="mb-1 block text-sm text-zinc-300">Title</label>
-              <input
-                id="title"
-                name="title"
-                required
-                placeholder="Brief note title"
-                className="w-full rounded-xl bg-zinc-900/70 px-3 py-2.5 text-zinc-100 outline-none ring-1 ring-white/10 transition focus:ring-2 focus:ring-blue-500/60 placeholder:text-zinc-500"
-              />
-            </div>
-            <div className="sm:col-span-2">
-              <label htmlFor="content" className="mb-1 block text-sm text-zinc-300">Content</label>
-              <textarea
-                id="content"
-                name="content"
-                rows={4}
-                placeholder="Optional content..."
-                className="w-full resize-y rounded-xl bg-zinc-900/70 px-3 py-2.5 text-zinc-100 outline-none ring-1 ring-white/10 transition focus:ring-2 focus:ring-blue-500/60 placeholder:text-zinc-500"
-              />
-            </div>
-            <div className="sm:col-span-2 pt-1">
-              <SubmitButton pendingText="Saving…">Save note</SubmitButton>
+          <form action={createNote} className="space-y-3">
+            <input
+              id="dashboard-title"
+              name="title"
+              required
+              placeholder="What's this about?"
+              className="pl-input"
+            />
+            <textarea
+              id="dashboard-content"
+              name="content"
+              rows={3}
+              placeholder="Write freely — you can distill it later..."
+              className="pl-input resize-y"
+            />
+            <div className="flex justify-end pt-1">
+              <SubmitButton pendingText="Capturing…" className="w-auto px-6">
+                Capture →
+              </SubmitButton>
             </div>
           </form>
         </div>
 
-        {/* Notes List */}
-        {!notes?.length ? (
-          <div className="rounded-2xl border border-dashed border-white/10 bg-white/5 p-10 text-center text-zinc-400">
-            You don’t have any notes yet. Create your first one above.
-          </div>
-        ) : (
-          <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            {notes.map((n) => (
-              <li
-                key={n.id}
-                className="rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur-xl hover:bg-white/[0.06] transition"
+        {/* ── Notes section ── */}
+        <div className="mt-10">
+          <div
+            className="mb-4 flex items-baseline gap-2 pl-animate-stagger"
+            style={{ animationDelay: '0.15s' }}
+          >
+            <h2 className="text-lg font-medium" style={{ color: 'var(--pl-ink)' }}>
+              Your notes
+            </h2>
+            {notes && notes.length > 0 && (
+              <span
+                className="text-xs"
+                style={{ color: 'var(--pl-muted)', fontFamily: 'var(--font-mono)' }}
               >
-                <div className="flex items-start justify-between gap-3">
-                  <Link
-                    href={`/notes/${n.id}`}
-                    className="text-base font-medium text-zinc-100 hover:underline underline-offset-4"
-                  >
-                    {n.title}
-                  </Link>
+                ({notes.length})
+              </span>
+            )}
+          </div>
 
-                  {/* Inline delete */}
-                  <form action={deleteNote}>
-                    <input type="hidden" name="id" value={n.id} />
-                    <ConfirmButton
-                      confirmText="Delete this note?"
-                      className="rounded-lg border border-red-500/30 bg-red-500/10 px-2 py-1 text-xs text-red-200 hover:bg-red-500/20"
-                    >
-                      Delete
-                    </ConfirmButton>
-                  </form>
-                </div>
+          {!notes?.length ? (
+            /* ── Empty state ── */
+            <div
+              className="pl-animate-stagger flex flex-col items-center rounded-xl border border-dashed py-16 text-center"
+              style={{
+                borderColor: 'var(--pl-border)',
+                background: 'var(--pl-surface)',
+                animationDelay: '0.2s',
+              }}
+            >
+              <div
+                className="mb-4 flex h-14 w-14 items-center justify-center rounded-full"
+                style={{ background: 'var(--pl-surface-raised)' }}
+              >
+                <span className="text-2xl" style={{ color: 'var(--pl-ember)', opacity: 0.7 }}>
+                  ✎
+                </span>
+              </div>
+              <h3
+                className="text-base font-medium"
+                style={{ color: 'var(--pl-ink)' }}
+              >
+                Your notebook is empty
+              </h3>
+              <p
+                className="mt-1 max-w-xs text-sm"
+                style={{ color: 'var(--pl-muted)' }}
+              >
+                Capture your first thought above. Write as much as you want —
+                AI will distill it into what matters.
+              </p>
 
-                {n.content && (
-                  <p className="mt-1 line-clamp-3 text-sm text-zinc-400 whitespace-pre-wrap">
-                    {n.content}
-                  </p>
-                )}
-                <div className="mt-3 text-xs text-zinc-500">
-                  {new Date(n.updated_at || n.created_at).toLocaleString()}
+              {/* Decorative ✦ watermark */}
+              <span
+                className="mt-6 pl-animate-pulse text-3xl"
+                style={{ color: 'var(--pl-summary)', opacity: 0.15 }}
+              >
+                ✦
+              </span>
+            </div>
+          ) : (
+            <ul className="space-y-3">
+              {notes.map((n, i) => (
+                <div
+                  key={n.id}
+                  className="pl-animate-stagger"
+                  style={{ animationDelay: `${0.2 + i * 0.05}s` }}
+                >
+                  <NoteCard
+                    id={n.id}
+                    title={n.title}
+                    content={n.content}
+                    summary={n.summary ?? null}
+                    updatedAt={n.updated_at}
+                    createdAt={n.created_at}
+                    deleteAction={deleteNote}
+                  />
                 </div>
-              </li>
-            ))}
-          </ul>
-        )}
-      </section>
+              ))}
+            </ul>
+          )}
+        </div>
+      </div>
     </main>
   );
 }

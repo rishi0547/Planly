@@ -12,74 +12,112 @@ export default async function LoginPage({ searchParams }: PageProps) {
   const { error, message } = await searchParams;
 
   return (
-    <div className="relative min-h-screen bg-[radial-gradient(60%_80%_at_50%_0%,#0b1220_0%,#0a0a0b_60%,#060607_100%)] text-zinc-100">
-      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_bottom,rgba(255,255,255,0.04),transparent_20%),linear-gradient(to_right,rgba(255,255,255,0.03),transparent_20%)] [mask-image:radial-gradient(ellipse_at_center,black_60%,transparent_100%)]" />
-      <div className="relative mx-auto flex min-h-screen max-w-7xl items-center justify-center p-4">
-        <div className="w-full max-w-md rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl shadow-[0_10px_50px_rgba(0,0,0,0.45)]">
-          <div className="border-b border-white/10 px-8 py-6">
-            <h1 className="text-xl font-semibold tracking-tight">Welcome back</h1>
-            <p className="text-sm text-zinc-400">Sign in to continue to Planly</p>
+    <div
+      className="flex min-h-screen flex-col items-center justify-center px-4"
+      style={{ background: 'var(--pl-void)', color: 'var(--pl-ink)' }}
+    >
+      {/* Wordmark */}
+      <Link
+        href="/"
+        className="mb-10 text-2xl font-bold tracking-tight transition-opacity hover:opacity-80"
+        style={{ fontFamily: 'var(--font-display)' }}
+      >
+        Planly
+      </Link>
+
+      <div className="w-full max-w-sm">
+        <div className="pl-card overflow-hidden">
+          {/* Header */}
+          <div className="px-7 pt-7 pb-0">
+            <h1 className="text-lg font-medium" style={{ color: 'var(--pl-ink)' }}>
+              Welcome back
+            </h1>
+            <p className="mt-1 text-xs" style={{ color: 'var(--pl-muted)' }}>
+              Sign in to continue to your notes
+            </p>
           </div>
 
-          <div className="px-8 py-6">
+          {/* Form */}
+          <div className="px-7 pt-5 pb-7">
             {error && (
-              <div className="mb-4 rounded-xl border border-red-500/30 bg-red-500/10 p-3 text-xs text-red-300">
+              <div
+                className="mb-4 rounded-lg border px-3 py-2.5 text-xs"
+                style={{
+                  borderColor: 'rgba(161, 92, 92, 0.3)',
+                  background: 'var(--pl-danger-bg)',
+                  color: 'var(--pl-danger)',
+                }}
+              >
                 {error}
               </div>
             )}
             {message && (
-              <div className="mb-4 rounded-xl border border-blue-500/30 bg-blue-500/10 p-3 text-xs text-blue-300">
+              <div
+                className="mb-4 rounded-lg border px-3 py-2.5 text-xs"
+                style={{
+                  borderColor: 'rgba(91, 138, 114, 0.3)',
+                  background: 'var(--pl-summary-bg)',
+                  color: 'var(--pl-summary)',
+                }}
+              >
                 {message}
               </div>
             )}
 
             <form action={login} className="space-y-4">
-              <div className="space-y-2">
-                <label htmlFor="email" className="block text-sm text-zinc-300">Email</label>
+              <div>
+                <label htmlFor="login-email" className="mb-1.5 block text-xs font-medium" style={{ color: 'var(--pl-muted)' }}>
+                  Email
+                </label>
                 <input
-                  id="email"
+                  id="login-email"
                   name="email"
                   type="email"
                   autoComplete="email"
                   required
                   placeholder="you@domain.com"
-                  className="w-full rounded-xl bg-zinc-900/70 px-3 py-2.5 text-zinc-100 outline-none ring-1 ring-white/10 transition focus:ring-2 focus:ring-blue-500/60 placeholder:text-zinc-500"
+                  className="pl-input"
                 />
               </div>
 
-              <div className="space-y-2">
-                <label htmlFor="password" className="block text-sm text-zinc-300">Password</label>
+              <div>
+                <label htmlFor="login-password" className="mb-1.5 block text-xs font-medium" style={{ color: 'var(--pl-muted)' }}>
+                  Password
+                </label>
                 <input
-                  id="password"
+                  id="login-password"
                   name="password"
                   type="password"
                   autoComplete="current-password"
                   required
                   placeholder="••••••••"
-                  className="w-full rounded-xl bg-zinc-900/70 px-3 py-2.5 text-zinc-100 outline-none ring-1 ring-white/10 transition focus:ring-2 focus:ring-blue-500/60 placeholder:text-zinc-500"
+                  className="pl-input"
                 />
               </div>
 
-              <div className="pt-2">
-                <SubmitButton pendingText="Signing in…">Sign in</SubmitButton>
-              </div>
-
-              <div className="flex items-center justify-between pt-2">
-                <p className="text-sm text-zinc-400">Don’t have an account?</p>
-                <Link
-                  href="/signup"
-                  className="text-sm font-medium text-zinc-100 underline-offset-4 transition hover:underline hover:text-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-400/40 rounded-md px-1"
-                >
-                  Create account
-                </Link>
+              <div className="pt-1">
+                <SubmitButton pendingText="Signing in…" className="w-full">
+                  Sign in
+                </SubmitButton>
               </div>
             </form>
-          </div>
 
-          <div className="rounded-b-2xl border-t border-white/10 bg-black/20 px-8 py-4 text-xs text-zinc-500">
-            By continuing you agree to our terms.
+            <div className="mt-5 flex items-center justify-center gap-1 text-xs">
+              <span style={{ color: 'var(--pl-muted)' }}>No account?</span>
+              <Link
+                href="/signup"
+                className="font-medium transition-colors"
+                style={{ color: 'var(--pl-ember)' }}
+              >
+                Create one
+              </Link>
+            </div>
           </div>
         </div>
+
+        <p className="mt-6 text-center text-[0.625rem]" style={{ color: 'var(--pl-muted)', opacity: 0.6 }}>
+          By continuing you agree to our terms.
+        </p>
       </div>
     </div>
   );

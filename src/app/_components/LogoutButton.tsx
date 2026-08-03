@@ -1,3 +1,5 @@
+'use client';
+
 import { logout } from '../(auth)/actions';
 
 export default function LogoutButton() {
@@ -5,9 +7,15 @@ export default function LogoutButton() {
     <form>
       <button
         formAction={logout}
-        className="mt-2 text-xs font-medium text-red-400 hover:text-red-300 underline underline-offset-2 transition"
+        className="text-xs font-medium transition-colors"
+        style={{
+          color: 'var(--pl-muted)',
+          textDecoration: 'none',
+        }}
+        onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--pl-ink)')}
+        onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--pl-muted)')}
       >
-        Log out
+        Sign out
       </button>
     </form>
   );
