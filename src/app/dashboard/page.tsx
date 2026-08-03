@@ -1,37 +1,41 @@
 import { redirectIfNotAuthenticated } from '@/utils/redirectIfNotAuthenticated';
 import { createClient } from '@/utils/supabase/server';
 import SubmitButton from '../_components/SubmitButton';
-import { createNote, deleteNote } from '../(notes)/actions';
+import { createTask, toggleTaskCompletion, deleteTask } from '../(notes)/actions';
 import LogoutButton from '../_components/LogoutButton';
-import NoteCard from '../_components/NoteCard';
+import TaskRow from '../_components/TaskRow';
 
 export default async function DashboardPage() {
   const user = await redirectIfNotAuthenticated();
   const supabase = await createClient();
 
-  const { data: notes } = await supabase
+  const { data: rawTasks } = await supabase
     .from('notes')
-    .select('id, title, content, summary, summarized_at, created_at, updated_at')
+    .select('id, title, content, is_completed, created_at, updated_at')
     .order('created_at', { ascending: false });
 
+  const tasks = rawTasks || [];
+  const completedCount = tasks.filter((t) => t.is_completed).length;
+  const pendingCount = tasks.length - completedCount;
+
   return (
-    <main className="min-h-screen" style={{ background: 'var(--pl-void)', color: 'var(--pl-ink)' }}>
-      {/* ── Top bar ── */}
+    <main className="min-h-screen" style={{ background: 'var(--bg-deepest)', color: 'var(--fg-light)' }}>
+      {/* Header Bar */}
       <header
         className="sticky top-0 z-50 flex items-center justify-between px-6 py-4 backdrop-blur-md"
         style={{
-          background: 'rgba(26, 24, 22, 0.85)',
-          borderBottom: '1px solid var(--pl-border)',
+          background: 'rgba(5, 31, 32, 0.85)',
+          borderBottom: '1px solid var(--border)',
         }}
       >
         <span
           className="text-xl font-bold tracking-tight"
-          style={{ fontFamily: 'var(--font-display)' }}
+          style={{ fontFamily: 'var(--font-display)', color: 'var(--fg-light)' }}
         >
           Planly
         </span>
         <div className="flex items-center gap-4">
-          <span className="text-xs" style={{ color: 'var(--pl-muted)', fontFamily: 'var(--font-mono)' }}>
+          <span className="text-xs" style={{ color: 'var(--fg-muted)', fontFamily: 'var(--font-mono)' }}>
             {user.email}
           </span>
           <LogoutButton />
@@ -39,118 +43,91 @@ export default async function DashboardPage() {
       </header>
 
       <div className="mx-auto max-w-[720px] px-6 pb-20 pt-8">
-        {/* ── Composer ── */}
-        <div
-          className="pl-card-raised p-5 pl-animate-stagger"
-          style={{ animationDelay: '0.05s' }}
-        >
-          <div className="mb-4 flex items-center gap-2">
-            <span style={{ color: 'var(--pl-ember)', fontSize: '1rem' }}>✎</span>
-            <h2 className="text-sm font-medium" style={{ color: 'var(--pl-ink)' }}>
-              Capture a thought
+        {/* Add a Task Composer */}
+        <div className="pl-card-elevated p-5 pl-animate-fade">
+          <div className="mb-3 flex items-center justify-between">
+            <h2 className="text-sm font-semibold flex items-center gap-2" style={{ color: 'var(--fg-light)' }}>
+              <span className="text-[var(--accent)]">⊕</span> Add a task
             </h2>
+            <span className="text-[0.6875rem] font-mono text-[var(--fg-muted)]">
+              {pendingCount} pending, {completedCount} done
+            </span>
           </div>
 
-          <form action={createNote} className="space-y-3">
-            <input
-              id="dashboard-title"
-              name="title"
-              required
-              placeholder="What's this about?"
-              className="pl-input"
-            />
-            <textarea
-              id="dashboard-content"
-              name="content"
-              rows={3}
-              placeholder="Write freely — you can distill it later..."
-              className="pl-input resize-y"
-            />
+          <form action={createTask} className="space-y-3">
+            <div>
+              <label htmlFor="task-title" className="sr-only">Task Title</label>
+              <input
+                id="task-title"
+                name="title"
+                required
+                placeholder="What do you need to do?"
+                className="pl-input"
+              />
+            </div>
             <div className="flex justify-end pt-1">
-              <SubmitButton pendingText="Capturing…" className="w-auto px-6">
-                Capture →
+              <SubmitButton pendingText="Adding task…" className="w-auto px-6">
+                Add task →
               </SubmitButton>
             </div>
           </form>
         </div>
 
-        {/* ── Notes section ── */}
+        {/* Task List Header & Filters */}
         <div className="mt-10">
-          <div
-            className="mb-4 flex items-baseline gap-2 pl-animate-stagger"
-            style={{ animationDelay: '0.15s' }}
-          >
-            <h2 className="text-lg font-medium" style={{ color: 'var(--pl-ink)' }}>
-              Your notes
-            </h2>
-            {notes && notes.length > 0 && (
-              <span
-                className="text-xs"
-                style={{ color: 'var(--pl-muted)', fontFamily: 'var(--font-mono)' }}
-              >
-                ({notes.length})
-              </span>
-            )}
+          <div className="mb-4 flex items-baseline justify-between pl-animate-fade">
+            <div className="flex items-baseline gap-2">
+              <h2 className="text-lg font-bold" style={{ fontFamily: 'var(--font-display)', color: 'var(--fg-light)' }}>
+                Your Tasks
+              </h2>
+              {tasks.length > 0 && (
+                <span className="text-xs font-mono text-[var(--fg-muted)]">
+                  ({tasks.length})
+                </span>
+              )}
+            </div>
           </div>
 
-          {!notes?.length ? (
-            /* ── Empty state ── */
+          {/* Task List or Empty State */}
+          {!tasks.length ? (
+            /* Real Empty State */
             <div
-              className="pl-animate-stagger flex flex-col items-center rounded-xl border border-dashed py-16 text-center"
+              className="pl-animate-fade flex flex-col items-center justify-center rounded-xl border border-dashed py-16 px-6 text-center"
               style={{
-                borderColor: 'var(--pl-border)',
-                background: 'var(--pl-surface)',
-                animationDelay: '0.2s',
+                borderColor: 'var(--border)',
+                background: 'var(--bg-surface)',
               }}
             >
               <div
-                className="mb-4 flex h-14 w-14 items-center justify-center rounded-full"
-                style={{ background: 'var(--pl-surface-raised)' }}
+                className="mb-4 flex h-12 w-12 items-center justify-center rounded-full"
+                style={{ background: 'var(--bg-elevated)', color: 'var(--accent)' }}
               >
-                <span className="text-2xl" style={{ color: 'var(--pl-ember)', opacity: 0.7 }}>
-                  ✎
-                </span>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="9 11 12 14 22 4" />
+                  <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
+                </svg>
               </div>
-              <h3
-                className="text-base font-medium"
-                style={{ color: 'var(--pl-ink)' }}
-              >
-                Your notebook is empty
+              <h3 className="text-base font-semibold" style={{ color: 'var(--fg-light)' }}>
+                All clear! No tasks yet.
               </h3>
-              <p
-                className="mt-1 max-w-xs text-sm"
-                style={{ color: 'var(--pl-muted)' }}
-              >
-                Capture your first thought above. Write as much as you want —
-                AI will distill it into what matters.
+              <p className="mt-1 max-w-xs text-xs leading-relaxed" style={{ color: 'var(--fg-muted)' }}>
+                Type what you need to get done in the form above and click <span className="text-[var(--accent)] font-medium">Add task</span>.
               </p>
-
-              {/* Decorative ✦ watermark */}
-              <span
-                className="mt-6 pl-animate-pulse text-3xl"
-                style={{ color: 'var(--pl-summary)', opacity: 0.15 }}
-              >
-                ✦
-              </span>
             </div>
           ) : (
-            <ul className="space-y-3">
-              {notes.map((n, i) => (
-                <div
-                  key={n.id}
-                  className="pl-animate-stagger"
-                  style={{ animationDelay: `${0.2 + i * 0.05}s` }}
-                >
-                  <NoteCard
-                    id={n.id}
-                    title={n.title}
-                    content={n.content}
-                    summary={n.summary ?? null}
-                    updatedAt={n.updated_at}
-                    createdAt={n.created_at}
-                    deleteAction={deleteNote}
-                  />
-                </div>
+            <ul className="space-y-2.5">
+              {tasks.map((task) => (
+                <TaskRow
+                  key={task.id}
+                  id={task.id}
+                  title={task.title}
+                  isCompleted={task.is_completed}
+                  content={task.content}
+                  updatedAt={task.updated_at}
+                  createdAt={task.created_at}
+                  toggleAction={toggleTaskCompletion}
+                  deleteAction={deleteTask}
+                />
               ))}
             </ul>
           )}

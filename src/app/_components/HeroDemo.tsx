@@ -2,158 +2,93 @@
 
 import React, { useEffect, useState } from 'react';
 
-const RAW_LINES = [
-  'Meeting notes from the Q3 review — budget projections',
-  'came in 12% under target. Timeline pushed to March.',
-  'Three action items assigned to the dev team for sprint.',
+const DEMO_TASKS = [
+  { id: 1, title: 'Review Q3 team sprint roadmap', completed: false, time: 'Due today' },
+  { id: 2, title: 'Finalize core product documentation', completed: true, time: 'Done 2h ago' },
+  { id: 3, title: 'Schedule sync with design lead', completed: false, time: 'Due tomorrow' },
 ];
 
-const SUMMARY_TEXT =
-  'Q3 review covered budget (12% under), pushed timeline to March, and assigned 3 dev sprint actions.';
-
-type Phase = 'idle' | 'reveal' | 'pause' | 'compress' | 'summary' | 'done';
-
 export default function HeroDemo() {
-  const [phase, setPhase] = useState<Phase>('idle');
-  const [visibleLines, setVisibleLines] = useState(0);
+  const [tasks, setTasks] = useState(DEMO_TASKS);
+  const [activeStep, setActiveStep] = useState(0);
 
-  // Check prefers-reduced-motion
-  const [reducedMotion, setReducedMotion] = useState(false);
+  const toggleTask = (id: number) => {
+    setTasks((prev) =>
+      prev.map((t) => (t.id === id ? { ...t, completed: !t.completed } : t))
+    );
+  };
+
   useEffect(() => {
-    const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
-    setReducedMotion(mq.matches);
-    const handler = (e: MediaQueryListEvent) => setReducedMotion(e.matches);
-    mq.addEventListener('change', handler);
-    return () => mq.removeEventListener('change', handler);
+    const timer = setInterval(() => {
+      setActiveStep((prev) => {
+        const next = (prev + 1) % 3;
+        if (next === 1) {
+          setTasks((current) =>
+            current.map((t) => (t.id === 1 ? { ...t, completed: true } : t))
+          );
+        } else if (next === 2) {
+          setTasks((current) =>
+            current.map((t) => (t.id === 3 ? { ...t, completed: true } : t))
+          );
+        } else {
+          setTasks(DEMO_TASKS);
+        }
+        return next;
+      });
+    }, 2800);
+
+    return () => clearInterval(timer);
   }, []);
 
-  // If reduced motion, show final state immediately
-  useEffect(() => {
-    if (reducedMotion) {
-      setVisibleLines(RAW_LINES.length);
-      setPhase('done');
-      return;
-    }
-
-    // Start reveal after 800ms
-    const startTimer = setTimeout(() => setPhase('reveal'), 800);
-    return () => clearTimeout(startTimer);
-  }, [reducedMotion]);
-
-  // Reveal lines one by one
-  useEffect(() => {
-    if (phase !== 'reveal') return;
-    if (visibleLines >= RAW_LINES.length) {
-      const t = setTimeout(() => setPhase('pause'), 600);
-      return () => clearTimeout(t);
-    }
-    const t = setTimeout(() => setVisibleLines((v) => v + 1), 500);
-    return () => clearTimeout(t);
-  }, [phase, visibleLines]);
-
-  // Pause → compress
-  useEffect(() => {
-    if (phase !== 'pause') return;
-    const t = setTimeout(() => setPhase('compress'), 1000);
-    return () => clearTimeout(t);
-  }, [phase]);
-
-  // Compress → summary
-  useEffect(() => {
-    if (phase !== 'compress') return;
-    const t = setTimeout(() => setPhase('summary'), 800);
-    return () => clearTimeout(t);
-  }, [phase]);
-
-  // Summary → done
-  useEffect(() => {
-    if (phase !== 'summary') return;
-    const t = setTimeout(() => setPhase('done'), 600);
-    return () => clearTimeout(t);
-  }, [phase]);
-
-  const showRaw = phase !== 'summary' && phase !== 'done';
-  const showSummary = phase === 'summary' || phase === 'done';
-
   return (
-    <div className="pl-hero-demo relative mx-auto w-full max-w-lg">
-      {/* Raw note block */}
-      <div
-        className="pl-card p-5 transition-all duration-700"
-        style={{
-          opacity: showRaw ? 1 : 0,
-          transform: showRaw ? 'none' : 'translateY(-12px) scaleY(0.9)',
-          position: showRaw ? 'relative' : 'absolute',
-          inset: showRaw ? undefined : 0,
-        }}
-      >
-        <div
-          className="mb-3 flex items-center gap-2"
-          style={{ fontFamily: 'var(--font-mono)', fontSize: '0.6875rem', color: 'var(--pl-muted)' }}
-        >
-          <span style={{ color: 'var(--pl-ember)', opacity: 0.7 }}>✎</span>
-          Raw note
+    <div className="pl-card p-5 w-full shadow-2xl border-[var(--border)]">
+      <div className="mb-3 flex items-center justify-between border-b border-[var(--border)] pb-3">
+        <div className="flex items-center gap-2">
+          <span className="h-2 w-2 rounded-full bg-[var(--accent)] animate-pulse" />
+          <span className="text-xs font-mono text-[var(--fg-muted)]">Live Interactive Demo</span>
         </div>
-        <div className="space-y-2">
-          {RAW_LINES.map((line, i) => (
-            <p
-              key={i}
-              data-animate
-              className="text-sm leading-relaxed transition-all duration-500"
-              style={{
-                color: 'var(--pl-ink)',
-                opacity: i < visibleLines ? 1 : 0,
-                transform: i < visibleLines ? 'none' : 'translateX(-8px)',
-                ...(phase === 'compress'
-                  ? {
-                      opacity: 0.2,
-                      transform: `translateY(-${(i + 1) * 6}px) scaleY(0.85)`,
-                    }
-                  : {}),
-              }}
-            >
-              {line}
-            </p>
-          ))}
-        </div>
-      </div>
-
-      {/* Distill glyph */}
-      <div
-        className="flex items-center justify-center py-3 transition-opacity duration-500"
-        style={{ opacity: phase === 'pause' || phase === 'compress' ? 1 : 0 }}
-      >
-        <span
-          className="pl-glyph text-lg pl-animate-pulse"
-          style={{ color: 'var(--pl-summary)' }}
-        >
-          ✦
+        <span className="text-[0.6875rem] font-mono text-[var(--accent)] bg-[var(--bg-elevated)] px-2 py-0.5 rounded">
+          {tasks.filter((t) => t.completed).length}/{tasks.length} Completed
         </span>
       </div>
 
-      {/* Summary result */}
-      <div
-        className="transition-all duration-700"
-        style={{
-          opacity: showSummary ? 1 : 0,
-          transform: showSummary ? 'none' : 'translateY(8px) scale(0.97)',
-        }}
-      >
-        <div className="pl-card p-5">
-          <div
-            className="mb-3 flex items-center gap-2"
-            style={{ fontFamily: 'var(--font-mono)', fontSize: '0.6875rem', color: 'var(--pl-summary)' }}
+      <ul className="space-y-2.5">
+        {tasks.map((task) => (
+          <li
+            key={task.id}
+            onClick={() => toggleTask(task.id)}
+            className="flex items-center justify-between gap-3 p-3 rounded-lg border border-[var(--border)] bg-[var(--bg-elevated)] cursor-pointer transition-all duration-300 hover:border-[var(--accent)]"
           >
-            <span>✦</span>
-            AI Summary
-          </div>
-          <div className="pl-summary-bar">
-            <p className="text-sm leading-relaxed" style={{ color: 'var(--pl-ink)' }}>
-              {SUMMARY_TEXT}
-            </p>
-          </div>
-        </div>
-      </div>
+            <div className="flex items-center gap-3 min-w-0">
+              <div
+                className={`h-5 w-5 flex-shrink-0 rounded-md border flex items-center justify-center transition-all ${
+                  task.completed
+                    ? 'bg-[var(--accent)] border-[var(--accent)] text-[var(--bg-deepest)] pl-animate-check pl-animate-glow'
+                    : 'border-[var(--border)] bg-transparent'
+                }`}
+              >
+                {task.completed && (
+                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="2.5 6 5 8.5 9.5 3.5" />
+                  </svg>
+                )}
+              </div>
+              <span
+                className={`text-xs sm:text-sm font-medium transition-all ${
+                  task.completed
+                    ? 'line-through text-[var(--fg-muted)] opacity-60'
+                    : 'text-[var(--fg-light)]'
+                }`}
+              >
+                {task.title}
+              </span>
+            </div>
+            <span className="text-[0.6875rem] font-mono text-[var(--fg-muted)] flex-shrink-0">
+              {task.time}
+            </span>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }

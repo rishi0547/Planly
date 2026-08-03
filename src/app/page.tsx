@@ -8,14 +8,14 @@ export default async function LandingPage() {
   return (
     <main
       className="relative min-h-screen"
-      style={{ background: 'var(--pl-void)', color: 'var(--pl-ink)' }}
+      style={{ background: 'var(--bg-deepest)', color: 'var(--fg-light)' }}
     >
-      {/* ── Top nav ── */}
+      {/* Top Nav */}
       <nav
         className="sticky top-0 z-50 flex items-center justify-between px-6 py-4 backdrop-blur-md"
         style={{
-          background: 'rgba(26, 24, 22, 0.85)',
-          borderBottom: '1px solid var(--pl-border)',
+          background: 'rgba(5, 31, 32, 0.85)',
+          borderBottom: '1px solid var(--border)',
         }}
       >
         <span
@@ -26,130 +26,132 @@ export default async function LandingPage() {
         </span>
         <Link
           href="/login"
-          className="text-sm font-medium text-[var(--pl-muted)] hover:text-[var(--pl-ink)] transition-colors"
+          className="text-sm font-medium text-[var(--fg-muted)] hover:text-[var(--fg-light)] transition-colors"
         >
           Sign in
         </Link>
       </nav>
 
-      {/* ── Hero section ── */}
-      <section className="relative mx-auto flex flex-col items-center px-6 pb-24 pt-20 sm:pt-28">
+      {/* Hero Section */}
+      <section className="relative mx-auto flex flex-col items-center px-6 pb-24 pt-16 sm:pt-24 max-w-5xl">
         {/* Headline */}
-        <div className="pl-animate-stagger max-w-2xl text-center">
+        <div className="pl-animate-fade max-w-2xl text-center">
           <h1
-            className="text-[3rem] leading-[1.1] font-bold tracking-tight sm:text-[3.5rem]"
+            className="text-[2.75rem] leading-[1.1] font-bold tracking-tight sm:text-[3.5rem]"
             style={{ fontFamily: 'var(--font-display)' }}
           >
-            Write everything.
+            Clear your mind.
             <br />
-            <span style={{ color: 'var(--pl-ember)' }}>Keep what matters.</span>
+            <span style={{ color: 'var(--accent)' }}>Follow through today.</span>
           </h1>
 
           <p
             className="mx-auto mt-5 max-w-lg text-base leading-relaxed sm:text-[1.0625rem]"
-            style={{ color: 'var(--pl-muted)' }}
+            style={{ color: 'var(--fg-muted)' }}
           >
-            Capture your thoughts in full. Planly's AI reads through the noise
-            and distills each note into the key points you actually need.
+            Turn a scattered to-do list into a clear, doable plan. Capture what needs to be done, mark it complete, and move forward.
           </p>
         </div>
 
-        {/* CTAs */}
-        <div
-          className="pl-animate-stagger mt-8 flex flex-wrap items-center justify-center gap-3"
-          style={{ animationDelay: '0.15s' }}
-        >
-          <Link href="/signup" className="pl-btn-primary px-7 py-3">
-            Open your notebook →
+        {/* Action CTAs */}
+        <div className="pl-animate-fade mt-8 flex flex-wrap items-center justify-center gap-3">
+          <Link href="/signup" className="pl-btn-primary px-7 py-3 text-base">
+            Get started →
           </Link>
-          <Link href="/login" className="pl-btn-ghost px-7 py-3">
+          <Link href="/login" className="pl-btn-secondary px-7 py-3 text-base">
             Sign in
           </Link>
         </div>
 
-        {/* ── The Distill Demo ── */}
-        <div
-          className="pl-animate-stagger mt-16 w-full max-w-lg"
-          style={{ animationDelay: '0.3s' }}
-        >
+        {/* Live Interactive Task Demo */}
+        <div className="pl-animate-fade mt-14 w-full max-w-lg">
           <HeroDemo />
         </div>
 
-        {/* ── Feature cards ── */}
-        <div
-          className="pl-animate-stagger mt-20 grid w-full max-w-3xl grid-cols-1 gap-4 sm:grid-cols-3"
-          style={{ animationDelay: '0.45s' }}
-        >
-          {/* Private by design */}
-          <div className="pl-card p-5">
-            <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-lg" style={{ background: 'var(--pl-surface-raised)' }}>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--pl-ember)' }}>
+        {/* Task Manager Value Feature Cards */}
+        <div className="pl-animate-fade mt-20 grid w-full max-w-4xl grid-cols-1 gap-4 sm:grid-cols-3">
+          {/* Card 1 */}
+          <div className="pl-card p-6">
+            <div
+              className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg"
+              style={{ background: 'var(--bg-elevated)' }}
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
                 <path d="M7 11V7a5 5 0 0 1 10 0v4" />
               </svg>
             </div>
-            <h3 className="text-sm font-medium" style={{ color: 'var(--pl-ink)' }}>
-              Private by design
+            <h3 className="text-base font-semibold" style={{ color: 'var(--fg-light)' }}>
+              Private to You
             </h3>
-            <p className="mt-1 text-xs leading-relaxed" style={{ color: 'var(--pl-muted)' }}>
-              Only you can ever see your notes. Every row is locked to your account.
+            <p className="mt-2 text-xs leading-relaxed" style={{ color: 'var(--fg-muted)' }}>
+              Only your authenticated account can ever view or manage your tasks. Every row is protected at the database level.
             </p>
             <p
-              className="mt-2 text-[0.625rem]"
-              style={{ fontFamily: 'var(--font-mono)', color: 'var(--pl-muted)', opacity: 0.6 }}
+              className="mt-3 text-[0.625rem]"
+              style={{ fontFamily: 'var(--font-mono)', color: 'var(--fg-subtle)' }}
             >
-              Supabase RLS
+              Supabase Row Level Security
             </p>
           </div>
 
-          {/* Instant capture */}
-          <div className="pl-card p-5">
-            <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-lg" style={{ background: 'var(--pl-surface-raised)' }}>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--pl-ember)' }}>
+          {/* Card 2 */}
+          <div className="pl-card p-6">
+            <div
+              className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg"
+              style={{ background: 'var(--bg-elevated)' }}
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
               </svg>
             </div>
-            <h3 className="text-sm font-medium" style={{ color: 'var(--pl-ink)' }}>
-              Instant capture
+            <h3 className="text-base font-semibold" style={{ color: 'var(--fg-light)' }}>
+              Instant Action
             </h3>
-            <p className="mt-1 text-xs leading-relaxed" style={{ color: 'var(--pl-muted)' }}>
-              No loading screens. Start typing and your note saves instantly.
+            <p className="mt-2 text-xs leading-relaxed" style={{ color: 'var(--fg-muted)' }}>
+              No spinner lags or page reloads. Add a task or check it off with instant UI responsiveness.
             </p>
             <p
-              className="mt-2 text-[0.625rem]"
-              style={{ fontFamily: 'var(--font-mono)', color: 'var(--pl-muted)', opacity: 0.6 }}
+              className="mt-3 text-[0.625rem]"
+              style={{ fontFamily: 'var(--font-mono)', color: 'var(--fg-subtle)' }}
             >
               Next.js Server Actions
             </p>
           </div>
 
-          {/* AI distills */}
-          <div className="pl-card p-5">
-            <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-lg" style={{ background: 'var(--pl-summary-bg)' }}>
-              <span className="text-base" style={{ color: 'var(--pl-summary)' }}>✦</span>
+          {/* Card 3 */}
+          <div className="pl-card p-6">
+            <div
+              className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg"
+              style={{ background: 'var(--bg-elevated)' }}
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="9 11 12 14 22 4" />
+                <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
+              </svg>
             </div>
-            <h3 className="text-sm font-medium" style={{ color: 'var(--pl-ink)' }}>
-              AI distills for you
+            <h3 className="text-base font-semibold" style={{ color: 'var(--fg-light)' }}>
+              Pure Focus
             </h3>
-            <p className="mt-1 text-xs leading-relaxed" style={{ color: 'var(--pl-muted)' }}>
-              One click turns a long note into the 2–3 sentences that matter.
+            <p className="mt-2 text-xs leading-relaxed" style={{ color: 'var(--fg-muted)' }}>
+              Designed without heavy productivity bloat. A clean space to decide what matters today and mark it done.
             </p>
             <p
-              className="mt-2 text-[0.625rem]"
-              style={{ fontFamily: 'var(--font-mono)', color: 'var(--pl-muted)', opacity: 0.6 }}
+              className="mt-3 text-[0.625rem]"
+              style={{ fontFamily: 'var(--font-mono)', color: 'var(--fg-subtle)' }}
             >
-              GPT-4o mini
+              Task Clarity Interface
             </p>
           </div>
         </div>
       </section>
 
-      {/* ── Footer ── */}
+      {/* Footer */}
       <footer
         className="border-t px-6 py-6 text-center text-xs"
-        style={{ borderColor: 'var(--pl-border)', color: 'var(--pl-muted)' }}
+        style={{ borderColor: 'var(--border)', color: 'var(--fg-muted)' }}
       >
-        Built with Next.js, TypeScript & Supabase
+        Planly Task Manager — Built with Next.js, TypeScript & Supabase
       </footer>
     </main>
   );

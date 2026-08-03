@@ -7,13 +7,7 @@ export default function LogoutButton() {
     <form>
       <button
         formAction={logout}
-        className="text-xs font-medium transition-colors"
-        style={{
-          color: 'var(--pl-muted)',
-          textDecoration: 'none',
-        }}
-        onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--pl-ink)')}
-        onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--pl-muted)')}
+        className="text-xs font-medium text-[var(--fg-muted)] hover:text-[var(--fg-light)] transition-colors cursor-pointer"
       >
         Sign out
       </button>

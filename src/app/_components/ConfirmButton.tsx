@@ -30,13 +30,11 @@ export default function ConfirmButton({
       type="submit"
       onClick={onClick}
       disabled={pending}
-      className={className}
+      className={`text-xs transition-colors ${className}`}
       style={{
-        color: pending ? 'var(--pl-muted)' : 'var(--pl-danger)',
+        color: pending ? 'var(--fg-subtle)' : 'var(--danger-fg)',
         opacity: pending ? 0.6 : 1,
         cursor: pending ? 'not-allowed' : 'pointer',
-        fontSize: '0.8125rem',
-        transition: 'opacity 0.15s ease',
       }}
     >
       {pending ? 'Deleting…' : children}

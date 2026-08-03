@@ -13,12 +13,12 @@ const UNITS: [string, number][] = [
 
 function getRelative(dateStr: string): string {
   const seconds = Math.floor((Date.now() - new Date(dateStr).getTime()) / 1000);
-  if (seconds < 60) return 'just now';
+  if (seconds < 60) return 'Added just now';
   for (const [unit, val] of UNITS) {
     const count = Math.floor(seconds / val);
-    if (count >= 1) return `${count}${unit} ago`;
+    if (count >= 1) return `Added ${count}${unit} ago`;
   }
-  return 'just now';
+  return 'Added just now';
 }
 
 interface RelativeTimeProps {
@@ -46,9 +46,9 @@ export default function RelativeTime({ dateStr, className = '' }: RelativeTimePr
   return (
     <time
       dateTime={dateStr}
-      title={exact}
+      title={`Exact time: ${exact}`}
       className={className}
-      style={{ fontFamily: 'var(--font-mono)', fontSize: '0.6875rem', color: 'var(--pl-muted)', cursor: 'default' }}
+      style={{ fontFamily: 'var(--font-mono)', cursor: 'default' }}
     >
       {relative || exact}
     </time>

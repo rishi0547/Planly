@@ -14,13 +14,13 @@ export default async function LoginPage({ searchParams }: PageProps) {
   return (
     <div
       className="flex min-h-screen flex-col items-center justify-center px-4"
-      style={{ background: 'var(--pl-void)', color: 'var(--pl-ink)' }}
+      style={{ background: 'var(--bg-deepest)', color: 'var(--fg-light)' }}
     >
       {/* Wordmark */}
       <Link
         href="/"
-        className="mb-10 text-2xl font-bold tracking-tight transition-opacity hover:opacity-80"
-        style={{ fontFamily: 'var(--font-display)' }}
+        className="mb-8 text-2xl font-bold tracking-tight transition-opacity hover:opacity-80"
+        style={{ fontFamily: 'var(--font-display)', color: 'var(--fg-light)' }}
       >
         Planly
       </Link>
@@ -29,11 +29,11 @@ export default async function LoginPage({ searchParams }: PageProps) {
         <div className="pl-card overflow-hidden">
           {/* Header */}
           <div className="px-7 pt-7 pb-0">
-            <h1 className="text-lg font-medium" style={{ color: 'var(--pl-ink)' }}>
+            <h1 className="text-lg font-bold" style={{ fontFamily: 'var(--font-display)', color: 'var(--fg-light)' }}>
               Welcome back
             </h1>
-            <p className="mt-1 text-xs" style={{ color: 'var(--pl-muted)' }}>
-              Sign in to continue to your notes
+            <p className="mt-1 text-xs" style={{ color: 'var(--fg-muted)' }}>
+              Sign in to manage your tasks
             </p>
           </div>
 
@@ -43,9 +43,9 @@ export default async function LoginPage({ searchParams }: PageProps) {
               <div
                 className="mb-4 rounded-lg border px-3 py-2.5 text-xs"
                 style={{
-                  borderColor: 'rgba(161, 92, 92, 0.3)',
-                  background: 'var(--pl-danger-bg)',
-                  color: 'var(--pl-danger)',
+                  borderColor: 'rgba(161, 92, 92, 0.4)',
+                  background: 'var(--danger-bg)',
+                  color: 'var(--danger-fg)',
                 }}
               >
                 {error}
@@ -55,9 +55,9 @@ export default async function LoginPage({ searchParams }: PageProps) {
               <div
                 className="mb-4 rounded-lg border px-3 py-2.5 text-xs"
                 style={{
-                  borderColor: 'rgba(91, 138, 114, 0.3)',
-                  background: 'var(--pl-summary-bg)',
-                  color: 'var(--pl-summary)',
+                  borderColor: 'var(--border)',
+                  background: 'var(--bg-elevated)',
+                  color: 'var(--accent)',
                 }}
               >
                 {message}
@@ -66,7 +66,7 @@ export default async function LoginPage({ searchParams }: PageProps) {
 
             <form action={login} className="space-y-4">
               <div>
-                <label htmlFor="login-email" className="mb-1.5 block text-xs font-medium" style={{ color: 'var(--pl-muted)' }}>
+                <label htmlFor="login-email" className="mb-1.5 block text-xs font-medium" style={{ color: 'var(--fg-muted)' }}>
                   Email
                 </label>
                 <input
@@ -81,7 +81,7 @@ export default async function LoginPage({ searchParams }: PageProps) {
               </div>
 
               <div>
-                <label htmlFor="login-password" className="mb-1.5 block text-xs font-medium" style={{ color: 'var(--pl-muted)' }}>
+                <label htmlFor="login-password" className="mb-1.5 block text-xs font-medium" style={{ color: 'var(--fg-muted)' }}>
                   Password
                 </label>
                 <input
@@ -103,11 +103,11 @@ export default async function LoginPage({ searchParams }: PageProps) {
             </form>
 
             <div className="mt-5 flex items-center justify-center gap-1 text-xs">
-              <span style={{ color: 'var(--pl-muted)' }}>No account?</span>
+              <span style={{ color: 'var(--fg-muted)' }}>No account?</span>
               <Link
                 href="/signup"
-                className="font-medium transition-colors"
-                style={{ color: 'var(--pl-ember)' }}
+                className="font-medium transition-colors hover:underline"
+                style={{ color: 'var(--accent)' }}
               >
                 Create one
               </Link>
@@ -115,8 +115,8 @@ export default async function LoginPage({ searchParams }: PageProps) {
           </div>
         </div>
 
-        <p className="mt-6 text-center text-[0.625rem]" style={{ color: 'var(--pl-muted)', opacity: 0.6 }}>
-          By continuing you agree to our terms.
+        <p className="mt-6 text-center text-[0.625rem]" style={{ color: 'var(--fg-subtle)' }}>
+          Protected by Supabase Row Level Security
         </p>
       </div>
     </div>

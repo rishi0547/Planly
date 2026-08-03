@@ -15,6 +15,7 @@ export interface Database {
           user_id: string;
           title: string;
           content: string | null;
+          is_completed: boolean;
           summary: string | null;
           summarized_at: string | null;
           created_at: string;
@@ -25,6 +26,7 @@ export interface Database {
           user_id: string;
           title: string;
           content?: string | null;
+          is_completed?: boolean;
           summary?: string | null;
           summarized_at?: string | null;
           created_at?: string;
@@ -35,6 +37,7 @@ export interface Database {
           user_id?: string;
           title?: string;
           content?: string | null;
+          is_completed?: boolean;
           summary?: string | null;
           summarized_at?: string | null;
           created_at?: string;
@@ -66,6 +69,9 @@ export interface Database {
   };
 }
 
-export type Note = Database['public']['Tables']['notes']['Row'];
-export type InsertNote = Database['public']['Tables']['notes']['Insert'];
-export type UpdateNote = Database['public']['Tables']['notes']['Update'];
+export type Task = Database['public']['Tables']['notes']['Row'];
+export type InsertTask = Database['public']['Tables']['notes']['Insert'];
+export type UpdateTask = Database['public']['Tables']['notes']['Update'];
+
+// Backward compatibility aliases
+export type Note = Task;

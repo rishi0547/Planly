@@ -7,7 +7,7 @@ interface SubmitButtonProps {
   children: React.ReactNode;
   pendingText?: string;
   className?: string;
-  variant?: 'primary' | 'ghost';
+  variant?: 'primary' | 'secondary';
 }
 
 export default function SubmitButton({
@@ -18,7 +18,7 @@ export default function SubmitButton({
 }: SubmitButtonProps) {
   const { pending } = useFormStatus();
 
-  const base = variant === 'primary' ? 'pl-btn-primary' : 'pl-btn-ghost';
+  const base = variant === 'primary' ? 'pl-btn-primary' : 'pl-btn-secondary';
 
   return (
     <button
@@ -26,7 +26,6 @@ export default function SubmitButton({
       disabled={pending}
       aria-busy={pending}
       className={`${base} ${className}`}
-      style={pending ? { opacity: 0.6, cursor: 'not-allowed' } : {}}
     >
       {pending && (
         <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24" aria-hidden="true">
