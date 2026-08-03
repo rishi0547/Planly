@@ -15,14 +15,38 @@ export default async function TaskDetailPage({ params }: PageProps) {
   const supabase = await createClient();
   const { id } = await params;
 
-  const { data: task } = await supabase
+  let { data: rawTask, error } = await supabase
     .from('notes')
-    .select('id, title, content, is_completed, updated_at, created_at, user_id')
+    .select('id, title, content, is_completed, priority, deadline, updated_at, created_at, user_id')
     .eq('id', id)
     .single();
 
+  if (error) {
+    const { data: fallbackTask } = await supabase
+      .from('notes')
+      .select('id, title, content, is_completed, updated_at, created_at, user_id')
+      .eq('id', id)
+      .single();
+    if (fallbackTask) {
+      rawTask = { ...fallbackTask, priority: 'medium', deadline: null };
+    }
+  }
+
+  const task = rawTask
+    ? {
+        ...rawTask,
+        is_completed: Boolean(rawTask.is_completed),
+        priority: rawTask.priority || 'medium',
+        deadline: rawTask.deadline || null,
+      }
+    : null;
+
   if (!task) return notFound();
   if (task.user_id !== user.id) redirect('/dashboard');
+
+  const formattedDeadlineDate = task.deadline
+    ? new Date(task.deadline).toISOString().split('T')[0]
+    : '';
 
   return (
     <main className="min-h-screen" style={{ background: 'var(--bg-deepest)', color: 'var(--fg-light)' }}>
@@ -30,7 +54,7 @@ export default async function TaskDetailPage({ params }: PageProps) {
       <header
         className="sticky top-0 z-50 flex items-center justify-between px-6 py-4 backdrop-blur-md"
         style={{
-          background: 'rgba(5, 31, 32, 0.85)',
+          background: 'rgba(11, 15, 20, 0.85)',
           borderBottom: '1px solid var(--border)',
         }}
       >
@@ -43,7 +67,7 @@ export default async function TaskDetailPage({ params }: PageProps) {
         </Link>
       </header>
 
-      <div className="mx-auto max-w-[720px] px-6 pb-20 pt-8">
+      <div className="mx-auto max-w-[760px] px-6 pb-20 pt-8">
         {/* Back navigation */}
         <nav className="mb-6">
           <Link
@@ -61,7 +85,7 @@ export default async function TaskDetailPage({ params }: PageProps) {
 
         {/* Task Edit Card */}
         <div className="pl-card p-6 pl-animate-fade">
-          <header className="mb-5 flex flex-wrap items-start justify-between gap-3">
+          <header className="mb-6 flex flex-wrap items-start justify-between gap-3">
             <div>
               <div className="flex items-center gap-2">
                 <span
@@ -70,7 +94,7 @@ export default async function TaskDetailPage({ params }: PageProps) {
                   }`}
                 />
                 <h1 className="text-lg font-bold" style={{ fontFamily: 'var(--font-display)', color: 'var(--fg-light)' }}>
-                  {task.is_completed ? 'Completed Task' : 'Edit Task'}
+                  Edit Task Details
                 </h1>
               </div>
               <p
@@ -85,12 +109,12 @@ export default async function TaskDetailPage({ params }: PageProps) {
             </div>
 
             <div className="flex items-center gap-2">
-              {/* Toggle Status */}
+              {/* Toggle Completion Status */}
               <form action={toggleTaskCompletion}>
                 <input type="hidden" name="id" value={task.id} />
                 <input type="hidden" name="is_completed" value={String(task.is_completed)} />
                 <SubmitButton variant="secondary" pendingText="Updating…" className="gap-1 text-xs py-1.5 px-3">
-                  {task.is_completed ? 'Mark incomplete' : '✓ Mark done'}
+                  {task.is_completed ? 'Mark incomplete' : '✓ Mark completed'}
                 </SubmitButton>
               </form>
 
@@ -108,9 +132,10 @@ export default async function TaskDetailPage({ params }: PageProps) {
           <form action={updateTask} className="space-y-4">
             <input type="hidden" name="id" value={task.id} />
 
+            {/* Task Title */}
             <div>
               <label htmlFor="task-title" className="mb-1.5 block text-xs font-medium" style={{ color: 'var(--fg-muted)' }}>
-                Task Title
+                Task Title <span className="text-[var(--accent)]">*</span>
               </label>
               <input
                 id="task-title"
@@ -121,22 +146,58 @@ export default async function TaskDetailPage({ params }: PageProps) {
               />
             </div>
 
+            {/* Task Description */}
             <div>
               <label htmlFor="task-content" className="mb-1.5 block text-xs font-medium" style={{ color: 'var(--fg-muted)' }}>
-                Notes / Sub-details (Optional)
+                Description / Details (Optional)
               </label>
               <textarea
                 id="task-content"
                 name="content"
-                rows={6}
+                rows={5}
                 defaultValue={task.content || ''}
-                placeholder="Add optional task sub-notes or details..."
+                placeholder="Add task description or sub-notes..."
                 className="pl-input resize-y"
               />
             </div>
 
-            <div className="flex justify-end pt-2">
-              <SubmitButton pendingText="Saving…" className="w-auto px-6">
+            {/* Priority & Deadline Grid */}
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 pt-1">
+              {/* Priority */}
+              <div>
+                <label htmlFor="task-priority" className="mb-1.5 block text-xs font-medium" style={{ color: 'var(--fg-muted)' }}>
+                  Priority Level
+                </label>
+                <select
+                  id="task-priority"
+                  name="priority"
+                  defaultValue={task.priority}
+                  className="pl-input cursor-pointer"
+                >
+                  <option value="low" className="bg-[var(--bg-deepest)] text-[var(--fg-light)]">Low Priority</option>
+                  <option value="medium" className="bg-[var(--bg-deepest)] text-[var(--fg-light)]">Medium Priority</option>
+                  <option value="high" className="bg-[var(--bg-deepest)] text-[var(--fg-light)]">High Priority</option>
+                </select>
+              </div>
+
+              {/* Deadline */}
+              <div>
+                <label htmlFor="task-deadline" className="mb-1.5 block text-xs font-medium" style={{ color: 'var(--fg-muted)' }}>
+                  Deadline Date (Optional)
+                </label>
+                <input
+                  id="task-deadline"
+                  name="deadline"
+                  type="date"
+                  defaultValue={formattedDeadlineDate}
+                  className="pl-input cursor-pointer"
+                />
+              </div>
+            </div>
+
+            {/* Save Button */}
+            <div className="flex justify-end pt-3">
+              <SubmitButton pendingText="Saving…" className="w-auto px-7">
                 Save changes
               </SubmitButton>
             </div>

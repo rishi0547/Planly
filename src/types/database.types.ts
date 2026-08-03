@@ -6,6 +6,8 @@ export type Json =
   | { [key: string]: Json | undefined }
   | Json[];
 
+export type PriorityLevel = 'low' | 'medium' | 'high';
+
 export interface Database {
   public: {
     Tables: {
@@ -16,6 +18,8 @@ export interface Database {
           title: string;
           content: string | null;
           is_completed: boolean;
+          priority: string | null;
+          deadline: string | null;
           summary: string | null;
           summarized_at: string | null;
           created_at: string;
@@ -27,6 +31,8 @@ export interface Database {
           title: string;
           content?: string | null;
           is_completed?: boolean;
+          priority?: string | null;
+          deadline?: string | null;
           summary?: string | null;
           summarized_at?: string | null;
           created_at?: string;
@@ -38,6 +44,8 @@ export interface Database {
           title?: string;
           content?: string | null;
           is_completed?: boolean;
+          priority?: string | null;
+          deadline?: string | null;
           summary?: string | null;
           summarized_at?: string | null;
           created_at?: string;

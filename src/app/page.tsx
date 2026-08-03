@@ -14,7 +14,7 @@ export default async function LandingPage() {
       <nav
         className="sticky top-0 z-50 flex items-center justify-between px-6 py-4 backdrop-blur-md"
         style={{
-          background: 'rgba(5, 31, 32, 0.85)',
+          background: 'rgba(11, 15, 20, 0.85)',
           borderBottom: '1px solid var(--border)',
         }}
       >
