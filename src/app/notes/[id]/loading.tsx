@@ -1,0 +1,7 @@
+export default function Loading() {
+  return (
+    <div className="flex min-h-screen items-center justify-center bg-zinc-950 text-zinc-400">
+      Loading note detail…
+    </div>
+  );
+}
