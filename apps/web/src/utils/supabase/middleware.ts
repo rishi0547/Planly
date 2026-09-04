@@ -3,7 +3,11 @@ import { NextResponse, type NextRequest } from 'next/server';
 import type { Database } from '@repo/common-types';
 
 export async function updateSession(request: NextRequest) {
-  const response = NextResponse.next({ request: { headers: request.headers } });
+  let response = NextResponse.next({
+    request: {
+      headers: request.headers,
+    },
+  });
 
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
@@ -18,19 +22,31 @@ export async function updateSession(request: NextRequest) {
     {
       cookies: {
         getAll() {
-          return request.cookies.getAll().map(({ name, value }) => ({ name, value }));
+          return request.cookies.getAll();
         },
-        setAll(cookies) {
-          cookies.forEach(({ name, value, options }) => {
-            response.cookies.set(name, value, options);
+        setAll(cookiesToSet) {
+          cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
+          response = NextResponse.next({
+            request,
           });
+          cookiesToSet.forEach(({ name, value, options }) =>
+            response.cookies.set(name, value, options)
+          );
         },
       },
     }
   );
 
-  // Refresh auth session so Server Components can trust getUser()
-  await supabase.auth.getUser();
+  // Refresh auth session with a strict 3s execution safety timeout
+  try {
+    const timeoutPromise = new Promise((_, reject) =>
+      setTimeout(() => reject(new Error('Supabase auth timeout in middleware')), 3000)
+    );
+    await Promise.race([supabase.auth.getUser(), timeoutPromise]);
+  } catch (error) {
+    console.error('Middleware Supabase session update error or timeout:', error);
+  }
 
   return response;
 }
+
